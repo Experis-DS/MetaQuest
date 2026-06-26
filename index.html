@@ -11360,9 +11360,13 @@ let DATA=null, charts=[];
 const RANK={Red:1,Yellow:2,Green:3,null:4};
 const norm=s=>(s||'').trim().toLowerCase();
 
-if(window.__FEED__){DATA=window.__FEED__;init();}
-else{fetch('assets/data.json').then(r=>r.json()).then(d=>{DATA=d;init();})
-  .catch(e=>{document.querySelector('.wrap').innerHTML='<p style="padding:40px;color:#999">Could not load data feed.</p>';});}
+function boot(){
+  if(window.__FEED__){DATA=window.__FEED__;init();}
+  else{fetch('assets/data.json').then(r=>r.json()).then(d=>{DATA=d;init();})
+    .catch(e=>{document.querySelector('.wrap').innerHTML='<p style="padding:40px;color:#999">Could not load data feed.</p>';});}
+}
+// Defer until the full script is parsed so all helpers (e.g. week) are initialized.
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{boot();}
 
 function init(){
   document.getElementById('gen').textContent='Feed generated '+DATA.generated;
