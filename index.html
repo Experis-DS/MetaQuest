@@ -109,9 +109,62 @@ table.dt tr:hover td{background:#faf9ff}
 footer{text-align:center;color:var(--gray);font-size:11px;margin-top:40px;padding-top:18px;border-top:1px solid var(--line)}
 .hide{display:none!important}
 @media(max-width:980px){.strip{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.chartgrid{grid-template-columns:1fr}}
+
+/* ---- password gate ---- */
+body.locked{overflow:hidden}
+#gate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(125deg,var(--frame),#241d52 55%,var(--violet));transition:opacity .5s ease,visibility .5s}
+#gate.unlocked{opacity:0;visibility:hidden;pointer-events:none}
+.gatecard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(14px);
+  border-radius:18px;padding:40px 38px;width:380px;max-width:90vw;text-align:center;box-shadow:0 30px 70px rgba(20,14,50,.45)}
+.gatecard img{height:34px;margin-bottom:22px}
+.gatecard .gk{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--violet-soft);margin-bottom:6px}
+.gatecard h2{color:#fff;font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+.gatecard p{color:rgba(255,255,255,.7);font-size:12.5px;margin-bottom:22px}
+#gate input{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);border-radius:10px;
+  padding:12px 14px;font-size:15px;color:#fff;font-family:inherit;text-align:center;letter-spacing:1px;outline:none}
+#gate input:focus{border-color:var(--violet-soft);background:rgba(255,255,255,.15)}
+#gate input::placeholder{color:rgba(255,255,255,.45);letter-spacing:0}
+#gate button{width:100%;margin-top:14px;background:linear-gradient(120deg,var(--violet),var(--violet-lt));
+  border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer}
+#gate button:hover{filter:brightness(1.08)}
+#gateErr{color:#FFC9C0;font-size:12px;font-weight:600;margin-top:12px;min-height:16px;opacity:0;transition:opacity .2s}
+#gateErr.show{opacity:1}
 </style>
 </head>
-<body>
+<body class="locked">
+
+<!-- password gate (required) -->
+<div id="gate">
+  <div class="gatecard">
+    <img src="assets/exp-hor-white.svg" alt="Experis"/>
+    <div class="gk">Meta · Confidential</div>
+    <h2>SLA Performance Dashboard</h2>
+    <p>Enter the access code to continue.</p>
+    <input id="gateInput" type="password" placeholder="Access code" autocomplete="off" autofocus/>
+    <button id="gateBtn">Unlock</button>
+    <div id="gateErr">Incorrect code — try again.</div>
+  </div>
+</div>
+<script>
+(function(){
+  const PASSWORD="metaverse";
+  const gate=document.getElementById('gate'), inp=document.getElementById('gateInput'),
+        btn=document.getElementById('gateBtn'), err=document.getElementById('gateErr');
+  function unlock(){
+    if(inp.value.trim().toLowerCase()===PASSWORD){
+      gate.classList.add('unlocked');
+      document.body.classList.remove('locked');
+    } else {
+      err.classList.add('show'); inp.value=''; inp.focus();
+    }
+  }
+  btn.addEventListener('click',unlock);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')unlock(); else err.classList.remove('show');});
+  inp.focus();
+})();
+</script>
+
 <header>
   <div class="hbar">
     <div class="brand">
